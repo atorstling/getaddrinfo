@@ -1,0 +1,13 @@
+{
+   <valgrind getaddrinfo>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:gaih_inet.constprop.5
+   fun:getaddrinfo
+}
+
