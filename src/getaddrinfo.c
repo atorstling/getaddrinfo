@@ -16,7 +16,7 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <stdarg.h>
-#define MAX( a, b ) ( ( a > b) ? a : b )
+//#define MAX( a, b ) ( ( a > b) ? a : b )
 
 static int EXIT_OTHER_ERROR=2;
 static char* program_name;
@@ -82,8 +82,8 @@ int printaddrinfo(char* host)
   /* Obtain address(es) matching host/port */
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_UNSPEC;    /* Allow IPv4 or IPv6 */
-  hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
+  hints.ai_family = AF_UNSPEC;    /* AF_INET or AF_INET6 */
+  hints.ai_socktype = 0; /* SOCK_STREAM or SOCK_DGRAM */
   hints.ai_flags = 0;
   hints.ai_protocol = 0;          /* Any protocol */
 	hints.ai_flags = AI_CANONNAME;
@@ -120,8 +120,13 @@ int printaddrinfo(char* host)
     } else {
       ip = rp->ai_addr->sa_data; 
     }*/
-    char ip[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
-    inet_ntop(rp->ai_addr->sa_family, rp->ai_addr, ip, rp->ai_addrlen);
+    char ip[NI_MAXHOST];
+    int r = getnameinfo(rp->ai_addr, rp->ai_addrlen, ip, 
+            sizeof(ip), 0, 0, NI_NUMERICHOST);
+    if (r != 0) {
+      error(EXIT_FAILURE, r, "getnameinfo: %s\n", gai_strerror(r));
+    }
+    //inet_ntop(rp->ai_addr->sa_family, rp->ai_addr, ip, rp->ai_addrlen);
 		printf("%d, %d, %d, %d, %d, %s\n", 
 				rp->ai_flags,
 				rp->ai_family, 
