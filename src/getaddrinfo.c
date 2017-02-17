@@ -145,10 +145,9 @@ void fill_protocol(int ai_protocol, char* buf, size_t buflen)
   }
 }
 
-int printaddrinfo(char* host);
-int printaddrinfo(char* host)
+void printaddrinfo(char* host);
+void printaddrinfo(char* host)
 {
-  printf("query: %s\n", host);
   /* Obtain address(es) matching host/port */
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -214,13 +213,85 @@ int printaddrinfo(char* host)
 */ 
 	}
 	freeaddrinfo(result);
-	return 0;
+}
+
+void printgethostbyname(char *host);
+void printgethostbyname(char *host)
+{
+  struct hostent* hosts = gethostbyname(host);
+  if(hosts == NULL) {
+		error(EXIT_FAILURE, h_errno, "gethostbyname(\"%s\"): %s\n", host, hstrerror(h_errno));
+  }
+  printf("hostname: %s\n", hosts->h_name);
+  printf("aliases:\n");
+  for(int i=0;;++i) {
+    char* alias = hosts->h_aliases[i];
+    if (alias==NULL) {
+      break;
+    }
+    printf("%s\n", alias);
+  }
+  char familystr[NI_MAXHOST];
+  fill_family(hosts->h_addrtype, familystr, sizeof(familystr));
+  //printf("addrtype: %s\n", familystr);
+  printf("addresses:\n");
+  for(int i=0;;++i) {
+    char* addr = hosts->h_addr_list[i];
+    if (addr==NULL) {
+      break;
+    }
+    char straddr[NI_MAXHOST];
+    inet_ntop(hosts->h_addrtype, addr, straddr, sizeof(straddr));
+    //char* straddr2 = inet_ntop( *( struct in_addr*)( addr )); 
+    printf("%s\n", straddr);
+  }
+}
+
+void printgethostbyname2(char *host, int family);
+void printgethostbyname2(char *host, int family)
+{
+  struct hostent* hosts = gethostbyname2(host, family);
+  if(hosts == NULL) {
+		error(EXIT_FAILURE, h_errno, "gethostbyname2(\"%s\"): %s\n", host, hstrerror(h_errno));
+  }
+  printf("hostname: %s\n", hosts->h_name);
+  printf("aliases:\n");
+  for(int i=0;;++i) {
+    char* alias = hosts->h_aliases[i];
+    if (alias==NULL) {
+      break;
+    }
+    printf("%s\n", alias);
+  }
+  char familystr[NI_MAXHOST];
+  fill_family(hosts->h_addrtype, familystr, sizeof(familystr));
+  //printf("addrtype: %s\n", familystr);
+  printf("addresses:\n");
+  for(int i=0;;++i) {
+    char* addr = hosts->h_addr_list[i];
+    if (addr==NULL) {
+      break;
+    }
+    char straddr[NI_MAXHOST];
+    inet_ntop(family, addr, straddr, sizeof(straddr));
+    //char* straddr2 = inet_ntop( *( struct in_addr*)( addr )); 
+    printf("%s\n", straddr);
+  }
 }
 
 int lookup(char* host);
 int lookup(char* host)
 {
-  return printaddrinfo(host);
+  printf("query: %s\n", host);
+  printf("- gethostbyname (only AF_INET) -\n");
+  printgethostbyname(host);
+  printf("- gethostbyname2 AF_INET -\n");
+  printgethostbyname2(host, AF_INET);
+  printf("- gethostbyname2 AF_INET6 -\n");
+  printgethostbyname2(host, AF_INET6);
+  printf("- getaddrinfo -\n");
+  printaddrinfo(host);
+  return 0;
 }
 
 int usage(void);

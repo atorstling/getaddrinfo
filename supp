@@ -10,4 +10,16 @@
    fun:gaih_inet.constprop.5
    fun:getaddrinfo
 }
-
+{
+   <gethostbyname2>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   fun:gethostbyname2_r@@GLIBC_2.2.5
+   fun:gethostbyname2
+}
