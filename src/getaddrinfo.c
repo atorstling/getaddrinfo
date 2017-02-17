@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <stdarg.h>
+#define MAX( a, b ) ( ( a > b) ? a : b )
 
 static int EXIT_OTHER_ERROR=2;
 static char* program_name;
@@ -103,24 +104,36 @@ int printaddrinfo(char* host)
   }
 
 	for(struct addrinfo *rp=result; rp!=NULL; rp=rp->ai_next) {
-    char* ip; 
+    /*
+    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV]; 
+    int r = getnameinfo(rp->ai_addr, rp->ai_addrlen, hbuf, 
+            sizeof(hbuf), sbuf, sizeof(sbuf), 
+            NI_NUMERICHOST | NI_NUMERICSERV);
+    if (r != 0) {
+      error(EXIT_FAILURE, r, "getnameinfo: %s\n", gai_strerror(r));
+    }
+    */
+    /*
     if (rp->ai_addr->sa_family == AF_INET) {
       struct sockaddr_in *inaddr_ptr = (struct sockaddr_in *)rp->ai_addr;
       asprintf(&ip, "%s", inet_ntoa(inaddr_ptr->sin_addr)); 
     } else {
       ip = rp->ai_addr->sa_data; 
-    }
-    
+    }*/
+    char ip[MAX(INET_ADDRSTRLEN, INET6_ADDRSTRLEN)];
+    inet_ntop(rp->ai_addr->sa_family, rp->ai_addr, ip, rp->ai_addrlen);
 		printf("%d, %d, %d, %d, %d, %s\n", 
 				rp->ai_flags,
 				rp->ai_family, 
 				rp->ai_socktype,
 				rp->ai_protocol,
 				rp->ai_addr->sa_family,
-				ip);
-    if (ip != rp->ai_addr->sa_data) {
+				ip
+        );
+  /* if (ip != rp->ai_addr->sa_data) {
      free(ip);
-    } 
+    }
+*/ 
 	}
 	freeaddrinfo(result);
 	return 0;
