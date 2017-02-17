@@ -71,9 +71,79 @@ char* strdup2(const char* str) {
 }
 
 //static int BUF_SIZE=500;
+inline int is_set(int flags, int flag)
+{
+  return (flags & flag) == flag;
+}
 
+void fill_family(int ai_family, char* buf, size_t buflen);
+void fill_family(int ai_family, char* buf, size_t buflen)
+{
+  switch(ai_family) {
+    case AF_INET:
+      strcpy(buf, "AF_INET");
+      break;
+    case AF_INET6:
+      strcpy(buf, "AF_INET6");
+      break;
+    default:
+      snprintf(buf, buflen, "%d", ai_family);  
+  }
+}
 
+void fill_socktype(int ai_socktype, char* buf, size_t buflen);
+void fill_socktype(int ai_socktype, char* buf, size_t buflen)
+{
+  switch(ai_socktype) {
+    case SOCK_STREAM:
+      strcpy(buf, "SOCK_STREAM");
+      break;
+    case SOCK_DGRAM:
+      strcpy(buf, "SOCK_DGRAM");
+      break;
+    case SOCK_SEQPACKET:
+      strcpy(buf, "SOCK_SEQPACKET");
+      break;
+    case SOCK_RAW:
+      strcpy(buf, "SOCK_RAW");
+      break;
+    case SOCK_RDM:
+      strcpy(buf, "SOCK_RDM");
+      break;
+    case SOCK_PACKET:
+      strcpy(buf, "SOCK_PACKET");
+      break;
+    default:
+      snprintf(buf, buflen, "%d", ai_socktype);
+  }
+}
 
+void fill_protocol(int ai_protocol, char* buf, size_t buflen);
+void fill_protocol(int ai_protocol, char* buf, size_t buflen)
+{
+  switch(ai_protocol) {
+    case IPPROTO_IP:
+      strcpy(buf, "IPPROTO_IP");
+      break;
+    case IPPROTO_IPV6:
+      strcpy(buf, "IPPROTO_IPV6");
+      break;
+    case IPPROTO_ICMP:
+      strcpy(buf, "IPPROTO_ICMP");
+      break;
+    case IPPROTO_RAW:
+      strcpy(buf, "IPPROTO_RAW");
+      break;
+    case IPPROTO_TCP:
+      strcpy(buf, "IPPROTO_TCP");
+      break;
+    case IPPROTO_UDP:
+      strcpy(buf, "IPPROTO_UDP");
+      break;
+    default:
+      snprintf(buf, buflen, "%d", ai_protocol);
+  }
+}
 
 int printaddrinfo(char* host);
 int printaddrinfo(char* host)
@@ -84,7 +154,6 @@ int printaddrinfo(char* host)
   memset(&hints, 0, sizeof(struct addrinfo));
   hints.ai_family = AF_UNSPEC;    /* AF_INET or AF_INET6 */
   hints.ai_socktype = 0; /* SOCK_STREAM or SOCK_DGRAM */
-  hints.ai_flags = 0;
   hints.ai_protocol = 0;          /* Any protocol */
 	hints.ai_flags = AI_CANONNAME;
 
@@ -126,13 +195,17 @@ int printaddrinfo(char* host)
     if (r != 0) {
       error(EXIT_FAILURE, r, "getnameinfo: %s\n", gai_strerror(r));
     }
+    char family[NI_MAXHOST];
+    fill_family(rp->ai_family, family, sizeof(family));
+    char socktype[NI_MAXHOST];
+    fill_socktype(rp->ai_socktype, socktype, sizeof(socktype));
+    char protocol[NI_MAXHOST];
+    fill_protocol(rp->ai_protocol, protocol, sizeof(protocol));
     //inet_ntop(rp->ai_addr->sa_family, rp->ai_addr, ip, rp->ai_addrlen);
-		printf("%d, %d, %d, %d, %d, %s\n", 
-				rp->ai_flags,
-				rp->ai_family, 
-				rp->ai_socktype,
-				rp->ai_protocol,
-				rp->ai_addr->sa_family,
+		printf("%s\t%s\t%s\t%s\n", 
+				family, 
+				socktype,
+				protocol,
 				ip
         );
   /* if (ip != rp->ai_addr->sa_data) {
