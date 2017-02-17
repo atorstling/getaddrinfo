@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-std=c11 -Weverything -Werror -Wno-format-nonliteral
+CFLAGS=-std=c11 -Weverything -Werror -Wno-format-nonliteral -Wno-cast-align
 # 'make DEBUG=0' disables debug mode
 DEBUG ?= 1
 ifeq ($(DEBUG), 1)

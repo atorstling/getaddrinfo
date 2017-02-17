@@ -1,6 +1,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include <sys/stat.h>
 #include <limits.h>
@@ -69,9 +71,13 @@ char* strdup2(const char* str) {
 
 //static int BUF_SIZE=500;
 
-int lookup(char* host);
-int lookup(char* host)
+
+
+
+int printaddrinfo(char* host);
+int printaddrinfo(char* host)
 {
+  printf("query: %s\n", host);
   /* Obtain address(es) matching host/port */
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
@@ -79,13 +85,51 @@ int lookup(char* host)
   hints.ai_socktype = SOCK_DGRAM; /* Datagram socket */
   hints.ai_flags = 0;
   hints.ai_protocol = 0;          /* Any protocol */
+	hints.ai_flags = AI_CANONNAME;
 
   struct addrinfo *result;
   int s = getaddrinfo(host, "80", &hints, &result);
   if (s != 0) {
 		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
   }
+
+	//python:
+	//getaddrinfo(...)
+  //  getaddrinfo(host, port [, family, socktype, proto, flags])
+  //      -> list of (family, socktype, proto, canonname, sockaddr)
+  if(result!=NULL) {
+    //Canon name is returned in first item in list
+    printf("canonical name: %s\n", result->ai_canonname);
+  }
+
+	for(struct addrinfo *rp=result; rp!=NULL; rp=rp->ai_next) {
+    char* ip; 
+    if (rp->ai_addr->sa_family == AF_INET) {
+      struct sockaddr_in *inaddr_ptr = (struct sockaddr_in *)rp->ai_addr;
+      asprintf(&ip, "%s", inet_ntoa(inaddr_ptr->sin_addr)); 
+    } else {
+      ip = rp->ai_addr->sa_data; 
+    }
+    
+		printf("%d, %d, %d, %d, %d, %s\n", 
+				rp->ai_flags,
+				rp->ai_family, 
+				rp->ai_socktype,
+				rp->ai_protocol,
+				rp->ai_addr->sa_family,
+				ip);
+    if (ip != rp->ai_addr->sa_data) {
+     free(ip);
+    } 
+	}
+	freeaddrinfo(result);
 	return 0;
+}
+
+int lookup(char* host);
+int lookup(char* host)
+{
+  return printaddrinfo(host);
 }
 
 int usage(void);
