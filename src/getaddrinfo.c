@@ -70,99 +70,193 @@ char* strdup2(const char* str) {
   return duped;
 }
 
-//static int BUF_SIZE=500;
-inline int is_set(int flags, int flag)
-{
-  return (flags & flag) == flag;
-}
+struct family {
+  int value;
+  char *name;
+};
+
+static struct family families[] = {
+  {AF_UNSPEC, "AF_UNSPEC"},
+  {AF_INET, "AF_INET"},
+  {AF_INET6, "AF_INET6"},
+};
 
 void fill_family(int ai_family, char* buf, size_t buflen);
 void fill_family(int ai_family, char* buf, size_t buflen)
 {
-  switch(ai_family) {
-    case AF_INET:
-      strcpy(buf, "AF_INET");
-      break;
-    case AF_INET6:
-      strcpy(buf, "AF_INET6");
-      break;
-    default:
-      snprintf(buf, buflen, "%d", ai_family);  
+  for(unsigned int i=0; i<(sizeof(families)/sizeof(families[0]));++i) {
+    struct family f=families[i];
+    if (f.value == ai_family) {
+      strcpy(buf, f.name);
+      return;
+    }
   }
+  snprintf(buf, buflen, "%d", ai_family);  
 }
+
+int lookup_family(char* family_s);
+int lookup_family(char* family_s)
+{
+  for(unsigned int i=0; i<(sizeof(families)/sizeof(families[0]));++i) {
+    struct family f=families[i];
+    if (strcmp(f.name, family_s) == 0) {
+      return f.value;
+    }
+  }
+  return atoi(family_s);
+}
+
+struct socktype {
+  int value;
+  char* name;
+};
+
+static struct socktype socktypes[] = {
+  { SOCK_STREAM, "SOCK_STREAM" },
+  { SOCK_DGRAM, "SOCK_DGRAM" },
+  { SOCK_SEQPACKET, "SOCK_SEQPACKET" },
+  { SOCK_RAW, "SOCK_RAW" },
+  { SOCK_RDM, "SOCK_RDM" },
+  { SOCK_PACKET, "SOCK_PACKET" },
+};
 
 void fill_socktype(int ai_socktype, char* buf, size_t buflen);
 void fill_socktype(int ai_socktype, char* buf, size_t buflen)
 {
-  switch(ai_socktype) {
-    case SOCK_STREAM:
-      strcpy(buf, "SOCK_STREAM");
-      break;
-    case SOCK_DGRAM:
-      strcpy(buf, "SOCK_DGRAM");
-      break;
-    case SOCK_SEQPACKET:
-      strcpy(buf, "SOCK_SEQPACKET");
-      break;
-    case SOCK_RAW:
-      strcpy(buf, "SOCK_RAW");
-      break;
-    case SOCK_RDM:
-      strcpy(buf, "SOCK_RDM");
-      break;
-    case SOCK_PACKET:
-      strcpy(buf, "SOCK_PACKET");
-      break;
-    default:
-      snprintf(buf, buflen, "%d", ai_socktype);
+  for(unsigned int i=0; i<(sizeof(socktypes)/sizeof(socktypes[0]));++i) {
+    struct socktype s=socktypes[i];
+    if (s.value == ai_socktype) {
+      strcpy(buf, s.name);
+      return;
+    }
   }
+  snprintf(buf, buflen, "%d", ai_socktype);  
 }
+
+int lookup_socktype(char* socktype_s);
+int lookup_socktype(char* socktype_s)
+{
+
+  for(unsigned int i=0; i<(sizeof(socktypes)/sizeof(socktypes[0]));++i) {
+    struct socktype s=socktypes[i];
+    if (strcmp(s.name, socktype_s) == 0) {
+      return s.value;
+    }
+  }
+  return atoi(socktype_s);
+}
+
+
+struct protocol {
+  int value;
+  char* name;
+};
+
+static struct protocol protocols[] = {
+  { IPPROTO_IP, "IPPROTO_IP" },
+  { IPPROTO_IPV6, "IPPROTO_IPV6" },
+  { IPPROTO_ICMP, "IPPROTO_ICMP" },
+  { IPPROTO_RAW, "IPPROTO_RAW" },
+  { IPPROTO_TCP, "IPPROTO_TCP" },
+  { IPPROTO_UDP, "IPPROTO_UDP" },
+};
 
 void fill_protocol(int ai_protocol, char* buf, size_t buflen);
 void fill_protocol(int ai_protocol, char* buf, size_t buflen)
 {
-  switch(ai_protocol) {
-    case IPPROTO_IP:
-      strcpy(buf, "IPPROTO_IP");
-      break;
-    case IPPROTO_IPV6:
-      strcpy(buf, "IPPROTO_IPV6");
-      break;
-    case IPPROTO_ICMP:
-      strcpy(buf, "IPPROTO_ICMP");
-      break;
-    case IPPROTO_RAW:
-      strcpy(buf, "IPPROTO_RAW");
-      break;
-    case IPPROTO_TCP:
-      strcpy(buf, "IPPROTO_TCP");
-      break;
-    case IPPROTO_UDP:
-      strcpy(buf, "IPPROTO_UDP");
-      break;
-    default:
-      snprintf(buf, buflen, "%d", ai_protocol);
+  for(unsigned int i=0; i<(sizeof(protocols)/sizeof(protocols[0]));++i) {
+    struct protocol p=protocols[i];
+    if (p.value == ai_protocol) {
+      strcpy(buf, p.name);
+      return;
+    }
   }
+  snprintf(buf, buflen, "%d", ai_protocol);  
 }
 
-void printaddrinfo(char* host);
-void printaddrinfo(char* host)
+int lookup_protocol(char* protocol_s);
+int lookup_protocol(char* protocol_s)
+{
+  for(unsigned int i=0; i<(sizeof(protocols)/sizeof(protocols[0]));++i) {
+    struct protocol p=protocols[i];
+    if (strcmp(p.name, protocol_s) == 0) {
+      return p.value;
+    }
+  }
+  return atoi(protocol_s);
+}
+
+struct flag {
+  int value;
+  char* name;
+};
+
+static struct flag flags[] = {
+  { AI_CANONNAME, "AI_CANONNAME" },
+  { AI_NUMERICSERV, "AI_NUMERICSERV" },
+  { AI_NUMERICHOST, "AI_NUMERICHOST" },
+  { AI_PASSIVE, "AI_PASSIVE" },
+  { AI_ADDRCONFIG, "AI_ADDRCONFIG" },
+  { AI_V4MAPPED, "AI_V4MAPPED" },
+  { AI_IDN, "AI_IDN" },
+  { AI_CANONIDN, "AI_CANONIDN" },
+  { AI_IDN_ALLOW_UNASSIGNED, "AI_IDN_ALLOW_UNASSIGNED" },
+  { AI_IDN_USE_STD3_ASCII_RULES, "AI_IDN_USE_STD3_ASCII_RULES" },
+};
+
+int lookup_flag(char* flag_s);
+int lookup_flag(char* flag_s)
+{
+  for(unsigned int i=0; i<(sizeof(flags)/sizeof(flags[0]));++i) {
+    struct flag f=flags[i];
+    if (strcmp(f.name, flag_s) == 0) {
+      return f.value;
+    }
+  }
+  return atoi(flag_s);
+}
+
+int lookup_flags(char** flags_s);
+int lookup_flags(char** flags_s)
+{
+  if (flags_s == NULL)
+  {
+    return 0;
+  }
+  int result=0;
+  for(unsigned int i=0;; ++i)
+  {
+    char* current = flags_s[i];
+    if (current == NULL) {
+      break;
+    }
+    result |= lookup_flag(current);
+  }
+  return result;
+}
+
+void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s);
+void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s)
 {
   /* Obtain address(es) matching host/port */
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = 0; //AF_UNSPEC;    /* AF_INET or AF_INET6 */
-  hints.ai_socktype = 0; /* SOCK_STREAM or SOCK_DGRAM */
-  hints.ai_protocol = 0;          /* Any protocol */
-	hints.ai_flags = AI_CANONNAME;
+  // AF_UNSPEC, AF_INET AF_INET6 etc
+  hints.ai_family = lookup_family(family_s); 
+  // SOCK_STREAM etc
+  hints.ai_socktype = lookup_socktype(socktype_s); 
+  // IPPROTO_ICMP etc 
+  hints.ai_protocol = lookup_protocol(protocol_s);
+  // AI_CANONNAME etc
+	hints.ai_flags = lookup_flags(flags_s);
 
   struct addrinfo *result;
-  int s = getaddrinfo(host, 0, &hints, &result);
+  int s = getaddrinfo(host, service, &hints, &result);
   if (s != 0) {
 		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
   }
 
-  if(result!=NULL) {
+  if(((hints.ai_flags & AI_CANONNAME) == AI_CANONNAME) &&  result!=NULL) {
     //Canon name is returned in first item in list
     printf("canonical name: %s\n", result->ai_canonname);
   }
@@ -258,15 +352,16 @@ void printgethostbyname2(char *host, int family)
 int lookup(char* host);
 int lookup(char* host)
 {
-  printf("query: %s\n", host);
-  printf("- gethostbyname (only AF_INET) -\n");
-  printgethostbyname(host);
-  printf("- gethostbyname2 AF_INET -\n");
-  printgethostbyname2(host, AF_INET);
-  printf("- gethostbyname2 AF_INET6 -\n");
-  printgethostbyname2(host, AF_INET6);
-  printf("- getaddrinfo -\n");
-  printaddrinfo(host);
+//  printf("query: %s\n", host);
+//  printf("- gethostbyname (only AF_INET) -\n");
+//  printgethostbyname(host);
+//  printf("- gethostbyname2 AF_INET -\n");
+//  printgethostbyname2(host, AF_INET);
+//  printf("- gethostbyname2 AF_INET6 -\n");
+//  printgethostbyname2(host, AF_INET6);
+//  printf("- getaddrinfo -\n");
+// void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s);
+  printaddrinfo(host, "0", "AF_INET", "SOCK_STREAM", "0", NULL);
   return 0;
 }
 
@@ -281,7 +376,7 @@ int main(int argc, char** argv)
 {
   program_name = argv[0];
   int opt;
-  while ((opt = getopt(argc, argv, "v")) != -1) {
+  while ((opt = getopt(argc, argv, "vs")) != -1) {
      switch (opt) {
      case 'v':
          verbose_flag_set = 1;
