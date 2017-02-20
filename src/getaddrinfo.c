@@ -151,43 +151,23 @@ void printaddrinfo(char* host)
   /* Obtain address(es) matching host/port */
   struct addrinfo hints;
   memset(&hints, 0, sizeof(struct addrinfo));
-  hints.ai_family = AF_UNSPEC;    /* AF_INET or AF_INET6 */
+  hints.ai_family = 0; //AF_UNSPEC;    /* AF_INET or AF_INET6 */
   hints.ai_socktype = 0; /* SOCK_STREAM or SOCK_DGRAM */
   hints.ai_protocol = 0;          /* Any protocol */
 	hints.ai_flags = AI_CANONNAME;
 
   struct addrinfo *result;
-  int s = getaddrinfo(host, "80", &hints, &result);
+  int s = getaddrinfo(host, 0, &hints, &result);
   if (s != 0) {
 		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
   }
 
-	//python:
-	//getaddrinfo(...)
-  //  getaddrinfo(host, port [, family, socktype, proto, flags])
-  //      -> list of (family, socktype, proto, canonname, sockaddr)
   if(result!=NULL) {
     //Canon name is returned in first item in list
     printf("canonical name: %s\n", result->ai_canonname);
   }
 
 	for(struct addrinfo *rp=result; rp!=NULL; rp=rp->ai_next) {
-    /*
-    char hbuf[NI_MAXHOST], sbuf[NI_MAXSERV]; 
-    int r = getnameinfo(rp->ai_addr, rp->ai_addrlen, hbuf, 
-            sizeof(hbuf), sbuf, sizeof(sbuf), 
-            NI_NUMERICHOST | NI_NUMERICSERV);
-    if (r != 0) {
-      error(EXIT_FAILURE, r, "getnameinfo: %s\n", gai_strerror(r));
-    }
-    */
-    /*
-    if (rp->ai_addr->sa_family == AF_INET) {
-      struct sockaddr_in *inaddr_ptr = (struct sockaddr_in *)rp->ai_addr;
-      asprintf(&ip, "%s", inet_ntoa(inaddr_ptr->sin_addr)); 
-    } else {
-      ip = rp->ai_addr->sa_data; 
-    }*/
     char ip[NI_MAXHOST];
     int r = getnameinfo(rp->ai_addr, rp->ai_addrlen, ip, 
             sizeof(ip), 0, 0, NI_NUMERICHOST);
@@ -207,10 +187,6 @@ void printaddrinfo(char* host)
 				protocol,
 				ip
         );
-  /* if (ip != rp->ai_addr->sa_data) {
-     free(ip);
-    }
-*/ 
 	}
 	freeaddrinfo(result);
 }
@@ -220,7 +196,7 @@ void printgethostbyname(char *host)
 {
   struct hostent* hosts = gethostbyname(host);
   if(hosts == NULL) {
-		error(EXIT_FAILURE, h_errno, "gethostbyname(\"%s\"): %s\n", host, hstrerror(h_errno));
+		error(EXIT_FAILURE, 0, "gethostbyname(\"%s\"): %s", host, hstrerror(h_errno));
   }
   printf("hostname: %s\n", hosts->h_name);
   printf("aliases:\n");
