@@ -97,6 +97,10 @@ void fill_family(int ai_family, char* buf, size_t buflen)
 int lookup_family(char* family_s);
 int lookup_family(char* family_s)
 {
+  if (family_s == NULL)
+  {
+    return 0;
+  }
   for(unsigned int i=0; i<(sizeof(families)/sizeof(families[0]));++i) {
     struct family f=families[i];
     if (strcmp(f.name, family_s) == 0) {
@@ -136,7 +140,10 @@ void fill_socktype(int ai_socktype, char* buf, size_t buflen)
 int lookup_socktype(char* socktype_s);
 int lookup_socktype(char* socktype_s)
 {
-
+  if (socktype_s == NULL)
+  {
+    return 0;
+  }
   for(unsigned int i=0; i<(sizeof(socktypes)/sizeof(socktypes[0]));++i) {
     struct socktype s=socktypes[i];
     if (strcmp(s.name, socktype_s) == 0) {
@@ -177,6 +184,10 @@ void fill_protocol(int ai_protocol, char* buf, size_t buflen)
 int lookup_protocol(char* protocol_s);
 int lookup_protocol(char* protocol_s)
 {
+  if (protocol_s == NULL)
+  {
+    return 0;
+  }
   for(unsigned int i=0; i<(sizeof(protocols)/sizeof(protocols[0]));++i) {
     struct protocol p=protocols[i];
     if (strcmp(p.name, protocol_s) == 0) {
@@ -249,6 +260,11 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
   hints.ai_protocol = lookup_protocol(protocol_s);
   // AI_CANONNAME etc
 	hints.ai_flags = lookup_flags(flags_s);
+
+  verbose("args:\nhost: %s\nservice: %s\nai_family: %d\nai_socktype: %d\n"
+         "ai_protocol: %d\nai_flags: %d\n",
+         host, service, hints.ai_family, hints.ai_socktype, 
+         hints.ai_protocol, hints.ai_flags);
 
   struct addrinfo *result;
   int s = getaddrinfo(host, service, &hints, &result);
@@ -372,22 +388,60 @@ int usage(void) {
   error(EXIT_OTHER_ERROR, 0, msg);
 }
 
+#define MAXFLAGS 16
+
 int main(int argc, char** argv)
 {
   program_name = argv[0];
   int opt;
-  while ((opt = getopt(argc, argv, "vs")) != -1) {
+  char *service_s=NULL;
+  char *family_s=NULL;
+  char *socktype_s=NULL;
+  char *protocol_s=NULL;
+  char *flags_s[MAXFLAGS];
+  int flag_counter=0;
+  while ((opt = getopt(argc, argv, "vs:f:o:")) != -1) {
      switch (opt) {
      case 'v':
          verbose_flag_set = 1;
+         break;
+     case 's':
+         service_s=strdup(optarg);
+         break;
+     case 'f':
+         family_s=strdup(optarg);
+         break;
+     case 'o':
+         socktype_s=strdup(optarg);
+         break;
+     case 'p':
+         protocol_s=strdup(optarg);
+         break;
+     case 'l':
+         flags_s[flag_counter++]=strdup(optarg);
          break;
      default: 
          usage();
      }
   }
+  flags_s[flag_counter]=NULL;
   if (optind >= argc) {
       usage();
   }
   char* host = argv[optind]; 
-  return lookup(host);
+  printaddrinfo(host, service_s, family_s, socktype_s, protocol_s, flags_s);
+  free(service_s);
+  free(family_s);
+  free(socktype_s);
+  free(protocol_s);
+  for(int i=0;;++i)
+  {
+    char* f = flags_s[i];
+    if(f == NULL)
+    {
+      break;
+    }
+    free(f);
+  }
+  return 0;
 }
