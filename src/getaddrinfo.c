@@ -284,7 +284,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
   }
 
-  verbose("#family\tsocktype\tprotocol\tcanonname\tip\n");
+  verbose("#family\tsocktype\tprotocol\tip\tcanonname\n");
 
 	for(struct addrinfo *rp=result; rp!=NULL; rp=rp->ai_next) {
     char ip[NI_MAXHOST];
@@ -309,8 +309,8 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 				family, 
 				socktype,
 				protocol,
-        canonname,
-				ip
+				ip,
+        canonname
         );
 	}
 	freeaddrinfo(result);
