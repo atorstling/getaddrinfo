@@ -58,6 +58,18 @@ void *alloc(size_t size) {
   return m;
 }
 
+int toi(const char* str);
+int toi(const char* str)
+{
+  char* end;
+  int res = (int) strtol(str, &end, 10);
+  if (end == str)
+  {
+    error(EXIT_OTHER_ERROR, errno, "could not convert string '%s' to integer", str);
+  }
+  return res;
+}
+
 char* strdup2(const char* str);
 char* strdup2(const char* str) {
   if (str == NULL) {
@@ -107,7 +119,7 @@ int lookup_family(char* family_s)
       return f.value;
     }
   }
-  return atoi(family_s);
+  return toi(family_s);
 }
 
 struct socktype {
@@ -150,7 +162,7 @@ int lookup_socktype(char* socktype_s)
       return s.value;
     }
   }
-  return atoi(socktype_s);
+  return toi(socktype_s);
 }
 
 
@@ -194,7 +206,7 @@ int lookup_protocol(char* protocol_s)
       return p.value;
     }
   }
-  return atoi(protocol_s);
+  return toi(protocol_s);
 }
 
 struct flag {
@@ -224,7 +236,7 @@ int lookup_flag(char* flag_s)
       return f.value;
     }
   }
-  return atoi(flag_s);
+  return toi(flag_s);
 }
 
 int lookup_flags(char** flags_s);
@@ -261,7 +273,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
   // AI_CANONNAME etc
 	hints.ai_flags = lookup_flags(flags_s);
 
-  verbose("args:\nhost: %s\nservice: %s\nai_family: %d\nai_socktype: %d\n"
+  verbose("host: %s\nservice: %s\nai_family: %d\nai_socktype: %d\n"
          "ai_protocol: %d\nai_flags: %d\n",
          host, service, hints.ai_family, hints.ai_socktype, 
          hints.ai_protocol, hints.ai_flags);
@@ -272,10 +284,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
   }
 
-  if(((hints.ai_flags & AI_CANONNAME) == AI_CANONNAME) &&  result!=NULL) {
-    //Canon name is returned in first item in list
-    printf("canonical name: %s\n", result->ai_canonname);
-  }
+  verbose("#family\tsocktype\tprotocol\tcanonname\tip\n");
 
 	for(struct addrinfo *rp=result; rp!=NULL; rp=rp->ai_next) {
     char ip[NI_MAXHOST];
@@ -284,6 +293,11 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
     if (r != 0) {
       error(EXIT_FAILURE, r, "getnameinfo: %s\n", gai_strerror(r));
     }
+    char *canonname="";
+    if(rp->ai_canonname)
+    {
+      canonname=rp->ai_canonname;
+    }
     char family[NI_MAXHOST];
     fill_family(rp->ai_family, family, sizeof(family));
     char socktype[NI_MAXHOST];
@@ -291,10 +305,11 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
     char protocol[NI_MAXHOST];
     fill_protocol(rp->ai_protocol, protocol, sizeof(protocol));
     //inet_ntop(rp->ai_addr->sa_family, rp->ai_addr, ip, rp->ai_addrlen);
-		printf("%s\t%s\t%s\t%s\n", 
+		printf("%s\t%s\t%s\t%s\t%s\n", 
 				family, 
 				socktype,
 				protocol,
+        canonname,
 				ip
         );
 	}
@@ -400,25 +415,25 @@ int main(int argc, char** argv)
   char *protocol_s=NULL;
   char *flags_s[MAXFLAGS];
   int flag_counter=0;
-  while ((opt = getopt(argc, argv, "vs:f:o:")) != -1) {
+  while ((opt = getopt(argc, argv, "ve:f:s:p:l:")) != -1) {
      switch (opt) {
      case 'v':
          verbose_flag_set = 1;
          break;
-     case 's':
-         service_s=strdup(optarg);
+     case 'e':
+         service_s=strdup2(optarg);
          break;
      case 'f':
-         family_s=strdup(optarg);
+         family_s=strdup2(optarg);
          break;
-     case 'o':
-         socktype_s=strdup(optarg);
+     case 's':
+         socktype_s=strdup2(optarg);
          break;
      case 'p':
-         protocol_s=strdup(optarg);
+         protocol_s=strdup2(optarg);
          break;
      case 'l':
-         flags_s[flag_counter++]=strdup(optarg);
+         flags_s[flag_counter++]=strdup2(optarg);
          break;
      default: 
          usage();
