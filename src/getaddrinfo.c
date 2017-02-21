@@ -398,9 +398,22 @@ int lookup(char* host)
 
 int usage(void);
 int usage(void) {
-  char* msg;
-  asprintf(&msg, "Usage: %s [-v] command", program_name);
-  error(EXIT_OTHER_ERROR, 0, msg);
+  printf("%s: network address and service translation\n", program_name);
+  puts("also see 'man addrinfo'");
+  printf("Usage: %s [-v] [-e service] [-f family] [-s socktype] [-p protocol]"
+          " [-l flag] host\n", program_name);
+  puts("-v: enable verbose mode");
+  puts("-e service: lookup for specific service.");
+  puts("            examples: 80 (port 80) or https (port 443)");
+  puts("-f family: lookup a specific address family");
+  puts("           examples: AF_INET (IPv4) or AF_INET6 (IPv6)");
+  puts("-s socktype: lookup for specific socket type."); 
+  puts("             examples: SOCK_STREAM or SOCK_DGRAM");
+  puts("-p protocol: lookup for specific protocol.");
+  puts("             examples: IPPROTO_IP or IPPROTO_ICMP");
+  puts("-l flag: set flags. See 'man getaddrinfo' for details");
+  puts("             examples: AI_CANONNAME, AI_PASSIVE");
+  exit(EXIT_OTHER_ERROR);
 }
 
 #define MAXFLAGS 16
@@ -415,10 +428,13 @@ int main(int argc, char** argv)
   char *protocol_s=NULL;
   char *flags_s[MAXFLAGS];
   int flag_counter=0;
-  while ((opt = getopt(argc, argv, "ve:f:s:p:l:")) != -1) {
+  while ((opt = getopt(argc, argv, "vhe:f:s:p:l:")) != -1) {
      switch (opt) {
      case 'v':
          verbose_flag_set = 1;
+         break;
+     case 'h':
+         usage();
          break;
      case 'e':
          service_s=strdup2(optarg);
@@ -440,10 +456,10 @@ int main(int argc, char** argv)
      }
   }
   flags_s[flag_counter]=NULL;
-  if (optind >= argc) {
-      usage();
+  char* host=NULL;
+  if (optind < argc) {
+      host = argv[optind]; 
   }
-  char* host = argv[optind]; 
   printaddrinfo(host, service_s, family_s, socktype_s, protocol_s, flags_s);
   free(service_s);
   free(family_s);
