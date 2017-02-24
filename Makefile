@@ -27,14 +27,17 @@ endif
 ODIR=target
 ADDRINFO_OUT=$(ODIR)/getaddrinfo
 HOSTBYNAME_OUT=$(ODIR)/gethostbyname
+HOSTBYNAME2_OUT=$(ODIR)/gethostbyname2
 SDIR=src
 _ADDRINFO_OBJS=common.o getaddrinfo.o 
 _HOSTBYNAME_OBJS=common.o gethostbyname.o
+_HOSTBYNAME2_OBJS=common.o gethostbyname2.o
 ADDRINFO_OBJS=$(patsubst %,$(ODIR)/%,$(_ADDRINFO_OBJS))
 HOSTBYNAME_OBJS=$(patsubst %,$(ODIR)/%,$(_HOSTBYNAME_OBJS))
+HOSTBYNAME2_OBJS=$(patsubst %,$(ODIR)/%,$(_HOSTBYNAME2_OBJS))
 PROFOUT=$(ODIR)/prof.out
 
-compile: $(ADDRINFO_OUT) $(HOSTBYNAME_OUT)
+compile: $(ADDRINFO_OUT) $(HOSTBYNAME_OUT) $(HOSTBYNAME2_OUT)
 
 all: analyze check
 
@@ -45,6 +48,9 @@ $(ADDRINFO_OUT): $(ADDRINFO_OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
 $(HOSTBYNAME_OUT): $(HOSTBYNAME_OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
+
+$(HOSTBYNAME2_OUT): $(HOSTBYNAME2_OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
 $(ODIR)/%.o: $(SDIR)/%.c $(ODIR)

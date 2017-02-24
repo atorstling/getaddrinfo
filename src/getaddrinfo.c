@@ -247,38 +247,6 @@ void printgethostbyname(char *host)
   }
 }
 
-void printgethostbyname2(char *host, int family);
-void printgethostbyname2(char *host, int family)
-{
-  struct hostent* hosts = gethostbyname2(host, family);
-  if(hosts == NULL) {
-		error(EXIT_FAILURE, h_errno, "gethostbyname2(\"%s\"): %s\n", host, hstrerror(h_errno));
-  }
-  printf("hostname: %s\n", hosts->h_name);
-  printf("aliases:\n");
-  for(int i=0;;++i) {
-    char* alias = hosts->h_aliases[i];
-    if (alias==NULL) {
-      break;
-    }
-    printf("%s\n", alias);
-  }
-  char familystr[NI_MAXHOST];
-  fill_family(hosts->h_addrtype, familystr, sizeof(familystr));
-  //printf("addrtype: %s\n", familystr);
-  printf("addresses:\n");
-  for(int i=0;;++i) {
-    char* addr = hosts->h_addr_list[i];
-    if (addr==NULL) {
-      break;
-    }
-    char straddr[NI_MAXHOST];
-    inet_ntop(family, addr, straddr, sizeof(straddr));
-    //char* straddr2 = inet_ntop( *( struct in_addr*)( addr )); 
-    printf("%s\n", straddr);
-  }
-}
-
 int lookup(char* host);
 int lookup(char* host)
 {
