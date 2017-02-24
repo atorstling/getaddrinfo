@@ -1,6 +1,6 @@
 # getaddrinfo
 When changing /etc/hosts or meddling with dnsmasq, I often wished that there
-was a userspace equivalent of getaddrinfo(3) and gethostbyname(3). Behold!
+was a userspace equivalent of getaddrinfo(3), gethostbyname(3) and gethostbyname2(3). Now there is!
 
 ## examples
 
