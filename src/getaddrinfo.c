@@ -215,53 +215,6 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 	freeaddrinfo(result);
 }
 
-void printgethostbyname(char *host);
-void printgethostbyname(char *host)
-{
-  struct hostent* hosts = gethostbyname(host);
-  if(hosts == NULL) {
-		error(EXIT_FAILURE, 0, "gethostbyname(\"%s\"): %s", host, hstrerror(h_errno));
-  }
-  printf("hostname: %s\n", hosts->h_name);
-  printf("aliases:\n");
-  for(int i=0;;++i) {
-    char* alias = hosts->h_aliases[i];
-    if (alias==NULL) {
-      break;
-    }
-    printf("%s\n", alias);
-  }
-  char familystr[NI_MAXHOST];
-  fill_family(hosts->h_addrtype, familystr, sizeof(familystr));
-  //printf("addrtype: %s\n", familystr);
-  printf("addresses:\n");
-  for(int i=0;;++i) {
-    char* addr = hosts->h_addr_list[i];
-    if (addr==NULL) {
-      break;
-    }
-    char straddr[NI_MAXHOST];
-    inet_ntop(hosts->h_addrtype, addr, straddr, sizeof(straddr));
-    //char* straddr2 = inet_ntop( *( struct in_addr*)( addr )); 
-    printf("%s\n", straddr);
-  }
-}
-
-int lookup(char* host);
-int lookup(char* host)
-{
-//  printf("query: %s\n", host);
-//  printf("- gethostbyname (only AF_INET) -\n");
-//  printgethostbyname(host);
-//  printf("- gethostbyname2 AF_INET -\n");
-//  printgethostbyname2(host, AF_INET);
-//  printf("- gethostbyname2 AF_INET6 -\n");
-//  printgethostbyname2(host, AF_INET6);
-//  printf("- getaddrinfo -\n");
-// void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s);
-  printaddrinfo(host, "0", "AF_INET", "SOCK_STREAM", "0", NULL);
-  return 0;
-}
 
 int usage(void);
 int usage(void) {
