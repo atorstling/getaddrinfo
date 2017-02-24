@@ -27,7 +27,7 @@ endif
 ODIR=target
 OUT=$(ODIR)/getaddrinfo
 SDIR=src
-_OBJS=getaddrinfo.o
+_OBJS=common.o getaddrinfo.o
 OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
 PROFOUT=$(ODIR)/prof.out
 

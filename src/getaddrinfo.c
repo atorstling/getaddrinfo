@@ -16,71 +16,10 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <stdarg.h>
-//#define MAX( a, b ) ( ( a > b) ? a : b )
 
-static int EXIT_OTHER_ERROR=2;
-static char* program_name;
-static int verbose_flag_set=0;
+#include "common.h"
 
-void error(int exit_code, int errnum, char* format, ...)__attribute__((noreturn));
-void error(int exit_code, int errnum, char* format, ...) {
-  fflush(stdout);
-  fputs(program_name, stderr);
-  fputs(": ", stderr);
-  va_list args;
-  va_start(args, format);
-  vfprintf(stderr, format, args);
-  va_end(args);
-  if (errnum != 0) {
-    fputs(": ", stderr);
-    fputs(strerror(errnum), stderr);
-  }
-  fputs("\n", stderr);
-  exit(exit_code);
-}
-
-void verbose(char* format, ...);
-void verbose(char* format, ...) {
-  if (verbose_flag_set) {
-    va_list args;
-    va_start(args, format);
-    vfprintf(stdout, format, args);
-    va_end(args);
-  }
-}
-
-void *alloc(size_t size);
-void *alloc(size_t size) {
-  void* m = malloc(size);
-  if (!m) {
-    error(EXIT_OTHER_ERROR, errno, "failed to allocate memory");
-  }
-  return m;
-}
-
-int toi(const char* str);
-int toi(const char* str)
-{
-  char* end;
-  int res = (int) strtol(str, &end, 10);
-  if (end == str)
-  {
-    error(EXIT_OTHER_ERROR, errno, "could not convert string '%s' to integer", str);
-  }
-  return res;
-}
-
-char* strdup2(const char* str);
-char* strdup2(const char* str) {
-  if (str == NULL) {
-    return NULL;
-  }
-  char* duped = strdup(str);
-  if (duped == NULL) {
-    error(EXIT_OTHER_ERROR, errno, "Unable to duplicate string '%s'", str);
-  } 
-  return duped;
-}
+static int verbose;
 
 struct family {
   int value;
@@ -273,7 +212,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
   // AI_CANONNAME etc
 	hints.ai_flags = lookup_flags(flags_s);
 
-  verbose("host: %s\nservice: %s\nai_family: %d\nai_socktype: %d\n"
+  verbosep(verbose, "host: %s\nservice: %s\nai_family: %d\nai_socktype: %d\n"
          "ai_protocol: %d\nai_flags: %d\n",
          host, service, hints.ai_family, hints.ai_socktype, 
          hints.ai_protocol, hints.ai_flags);
@@ -284,7 +223,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
   }
 
-  verbose("#family\tsocktype\tprotocol\tip\tcanonname\n");
+  verbosep(verbose, "#family\tsocktype\tprotocol\tip\tcanonname\n");
 
 	for(struct addrinfo *rp=result; rp!=NULL; rp=rp->ai_next) {
     char ip[NI_MAXHOST];
@@ -450,7 +389,7 @@ int main(int argc, char** argv)
   while ((opt = getopt(argc, argv, "vhe:f:s:p:l:")) != -1) {
      switch (opt) {
      case 'v':
-         verbose_flag_set = 1;
+         verbose = 1;
          break;
      case 'h':
          usage();
