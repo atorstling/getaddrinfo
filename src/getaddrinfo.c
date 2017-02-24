@@ -21,46 +21,6 @@
 
 static int verbose;
 
-struct family {
-  int value;
-  char *name;
-};
-
-static struct family families[] = {
-  {AF_UNSPEC, "AF_UNSPEC"},
-  {AF_INET, "AF_INET"},
-  {AF_INET6, "AF_INET6"},
-};
-
-void fill_family(int ai_family, char* buf, size_t buflen);
-void fill_family(int ai_family, char* buf, size_t buflen)
-{
-  for(unsigned int i=0; i<(sizeof(families)/sizeof(families[0]));++i) {
-    struct family f=families[i];
-    if (f.value == ai_family) {
-      strcpy(buf, f.name);
-      return;
-    }
-  }
-  snprintf(buf, buflen, "%d", ai_family);  
-}
-
-int lookup_family(char* family_s);
-int lookup_family(char* family_s)
-{
-  if (family_s == NULL)
-  {
-    return 0;
-  }
-  for(unsigned int i=0; i<(sizeof(families)/sizeof(families[0]));++i) {
-    struct family f=families[i];
-    if (strcmp(f.name, family_s) == 0) {
-      return f.value;
-    }
-  }
-  return toi(family_s);
-}
-
 struct socktype {
   int value;
   char* name;

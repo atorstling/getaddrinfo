@@ -25,20 +25,26 @@ else
 		LFLAGS=
 endif
 ODIR=target
-OUT=$(ODIR)/getaddrinfo
+ADDRINFO_OUT=$(ODIR)/getaddrinfo
+HOSTBYNAME_OUT=$(ODIR)/gethostbyname
 SDIR=src
-_OBJS=common.o getaddrinfo.o
-OBJS=$(patsubst %,$(ODIR)/%,$(_OBJS))
+_ADDRINFO_OBJS=common.o getaddrinfo.o 
+_HOSTBYNAME_OBJS=common.o gethostbyname.o
+ADDRINFO_OBJS=$(patsubst %,$(ODIR)/%,$(_ADDRINFO_OBJS))
+HOSTBYNAME_OBJS=$(patsubst %,$(ODIR)/%,$(_HOSTBYNAME_OBJS))
 PROFOUT=$(ODIR)/prof.out
 
-compile: $(OUT)
+compile: $(ADDRINFO_OUT) $(HOSTBYNAME_OUT)
 
 all: analyze check
 
 $(ODIR):
 	mkdir $(ODIR)
 
-$(OUT): $(OBJS)
+$(ADDRINFO_OUT): $(ADDRINFO_OBJS)
+	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
+
+$(HOSTBYNAME_OUT): $(HOSTBYNAME_OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
 $(ODIR)/%.o: $(SDIR)/%.c $(ODIR)
@@ -48,9 +54,9 @@ clean:
 	rm -rf $(ODIR)
 
 analyze: 
-	scan-build --status-bugs --use-cc=clang make clean $(OUT)
+	scan-build --status-bugs --use-cc=clang make clean build
 
-check: $(OUT)
+check: compile
 	./tests.py
 
 $(PROFOUT): $(OUT)
