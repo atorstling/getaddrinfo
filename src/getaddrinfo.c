@@ -401,7 +401,7 @@ int usage(void) {
   printf("%s: network address and service translation\n", program_name);
   puts("also see 'man addrinfo'");
   printf("Usage: %s [-v] [-e service] [-f family] [-s socktype] [-p protocol]"
-          " [-l flag] host\n", program_name);
+          " [-l flag] [host]\n", program_name);
   puts("-v: enable verbose mode");
   puts("-e service: lookup for specific service.");
   puts("            examples: 80 (port 80) or https (port 443)");
@@ -413,6 +413,20 @@ int usage(void) {
   puts("             examples: IPPROTO_IP or IPPROTO_ICMP");
   puts("-l flag: set flags. See 'man getaddrinfo' for details");
   puts("             examples: AI_CANONNAME, AI_PASSIVE");
+  puts("");
+  puts("examples");
+  puts("");
+  puts("To find out which address to listen to (AI_PASSIVE) ");
+  puts("ssh traffic (port 22) on IPv4 (AF_INET) TCP (SOCK_STREAM) do the following:");
+  puts("");
+  printf("$%s -e 22 -f AF_INET -s SOCK_STREAM -l AI_PASSIVE\n", program_name);
+  puts("AF_INET SOCK_STREAM IPPROTO_TCP 0.0.0.0");
+  puts("");
+  puts("A gethostbyname equivalent:");
+  puts("");
+  printf("$%s -f AF_INET -s SOCK_STREAM -l AI_CANONNAME mail.google.com\n", program_name);
+  puts("AF_INET SOCK_STREAM IPPROTO_TCP 172.217.22.165  googlemail.l.google.com");
+  puts("");
   exit(EXIT_OTHER_ERROR);
 }
 
