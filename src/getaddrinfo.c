@@ -257,14 +257,18 @@ int usage(void) {
 
 #define MAXFLAGS 16
 
+static char* DEFAULT_FAMILY=NULL;
+static char* DEFAULT_SOCKTYPE="SOCK_STREAM";
+static char* DEFAULT_PROTOCOL=NULL;
+
 int main(int argc, char** argv)
 {
   program_name = argv[0];
   int opt;
   char *service_s=NULL;
-  char *family_s=NULL;
-  char *socktype_s=NULL;
-  char *protocol_s=NULL;
+  char *family_s=DEFAULT_FAMILY;
+  char *socktype_s=DEFAULT_SOCKTYPE;
+  char *protocol_s=DEFAULT_PROTOCOL;
   char *flags_s[MAXFLAGS];
   int flag_counter=0;
   while ((opt = getopt(argc, argv, "vhe:f:s:p:l:")) != -1) {
@@ -301,9 +305,18 @@ int main(int argc, char** argv)
   }
   printaddrinfo(host, service_s, family_s, socktype_s, protocol_s, flags_s);
   free(service_s);
-  free(family_s);
-  free(socktype_s);
-  free(protocol_s);
+  if (family_s != DEFAULT_FAMILY)
+  {
+    free(family_s);
+  }
+  if (socktype_s != DEFAULT_SOCKTYPE)
+  {
+    free(socktype_s);
+  }
+  if (protocol_s != DEFAULT_PROTOCOL)
+  {
+    free(protocol_s);
+  }
   for(int i=0;;++i)
   {
     char* f = flags_s[i];
