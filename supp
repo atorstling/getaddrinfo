@@ -63,4 +63,17 @@
    fun:printaddrinfo
    fun:main
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__res_vinit
+   fun:__res_maybe_init
+   fun:gaih_inet
+   fun:getaddrinfo
+   fun:printaddrinfo
+   fun:main
+}
+
 

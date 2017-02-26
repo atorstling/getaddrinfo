@@ -1,6 +1,44 @@
-version 3
+version: "2.1"
 
 services:
-  testrunner: .
-  command: ./tests.py
+  testrunner: 
+    build: . 
+    command: python /getaddrinfo/dtests.py
+    networks:
+      - anet
+      - bnet
+    depends_on:
+      - bobo
+ 
+  bobo:
+    image: alpine
+    command: sleep 100d 
+    networks:
+      anet:
+        ipv4_address: 172.16.238.10
+        ipv6_address: 2001:3984:3989::10
+        aliases: 
+          - boboa
+      bnet:
+        ipv4_address: 172.16.239.10
+        ipv6_address: 2001:3984:3990::10
+        aliases: 
+          - bobob
 
+networks:
+  anet:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.238.0/24
+      - subnet: 2001:3984:3989::/64
+  bnet:
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.16.239.0/24
+      - subnet: 2001:3984:3990::/64

@@ -7,6 +7,3 @@ RUN apt-get -y install bsdmainutils
 COPY . getaddrinfo
 WORKDIR getaddrinfo
 ENV SHELL /bin/bash
-# Test files
-COPY test/home /root
-RUN make all

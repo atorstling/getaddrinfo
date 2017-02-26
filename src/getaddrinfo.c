@@ -180,7 +180,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
   struct addrinfo *result;
   int s = getaddrinfo(host, service, &hints, &result);
   if (s != 0) {
-		error(EXIT_FAILURE, s, "getaddrinfo: %s\n", gai_strerror(s));
+		error(EXIT_FAILURE, 0, "\"%s\" - %s\n", host, gai_strerror(s));
   }
 
   verbosep(verbose, "#family\tsocktype\tprotocol\tip\tcanonname\n");
