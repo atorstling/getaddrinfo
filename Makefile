@@ -60,7 +60,7 @@ clean:
 	rm -rf $(ODIR)
 
 analyze: 
-	scan-build --status-bugs --use-cc=clang make clean build
+	scan-build --status-bugs --use-cc=clang make clean compile
 
 check: compile
 	./tests.py
