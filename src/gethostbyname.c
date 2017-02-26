@@ -26,7 +26,7 @@ void printgethostbyname(char *host)
 {
   struct hostent* hosts = gethostbyname(host);
   if(hosts == NULL) {
-		error(EXIT_FAILURE, 0, "gethostbyname(\"%s\"): %s", host, hstrerror(h_errno));
+		error(EXIT_FAILURE, 0, "gethostbyname(\"%s\") - %s", host, hstrerror(h_errno));
   }
   printf("hostname: %s\n", hosts->h_name);
   for(int i=0;;++i) {
