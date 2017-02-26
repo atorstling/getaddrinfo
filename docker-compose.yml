@@ -1,0 +1,6 @@
+version 3
+
+services:
+  testrunner: .
+  command: ./tests.py
+

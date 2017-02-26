@@ -10,5 +10,3 @@ ENV SHELL /bin/bash
 # Test files
 COPY test/home /root
 RUN make all
-RUN ls -l /getaddrinfo/target
-ENTRYPOINT [ "/getaddrinfo/target/getaddrinfo" ]
