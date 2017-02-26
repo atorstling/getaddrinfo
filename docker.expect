@@ -1,0 +1,2 @@
+spawn docker-compose up --build
+expect getaddrinfo_testrunner_1 exited with code 0
