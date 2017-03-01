@@ -11,8 +11,8 @@ services:
       - bobo
  
   bobo:
-    image: alpine
-    command: sleep 100d 
+    build: .
+    command: /getaddrinfo/forever.sh
     networks:
       anet:
         ipv4_address: 172.16.238.10

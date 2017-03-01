@@ -20,9 +20,9 @@ endif
 # 'make PROFILE=0' disables profiler mode
 PROFILE ?= 1
 ifeq ($PROFILE), 1)
-		LFLAGS=-lprofiler
+		LFLAGS=-lprofiler -lbsd
 else
-		LFLAGS=
+		LFLAGS=-lbsd
 endif
 ODIR=target
 BINDIR=$(ODIR)/bin
@@ -40,7 +40,7 @@ PROFOUT=$(ODIR)/prof.out
 
 compile: $(ADDRINFO_OUT) $(HOSTBYNAME_OUT) $(HOSTBYNAME2_OUT)
 
-all: analyze check
+all: analyze check test
 
 $(ODIR):
 	mkdir $(ODIR)
@@ -68,6 +68,9 @@ analyze:
 
 check: compile
 	./tests.py
+
+test: compile
+	expect docker.expect && echo "OK"
 
 $(PROFOUT): $(OUT)
 	CPUPROFILE=$(PROFOUT) CPUPROFILE_REALTIME=1 $(OUT) ll

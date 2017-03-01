@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <libgen.h>
 #include <stdarg.h>
+#include <bsd/string.h>
 
 #include "common.h"
 
@@ -163,13 +164,13 @@ int lookup_flags(char** flags_s)
 void fill_flags(int ai_flags, char* buf, size_t buflen);
 void fill_flags(int ai_flags, char* buf, size_t buflen)
 {
-  strncat(buf, "[", buflen);
+  strlcat(buf, "[", buflen);
   unsigned int max = (sizeof(flags)/sizeof(flags[0]));
   for(unsigned int i=0; i<max;++i) {
     struct flag f=flags[i];
     if ((f.value & ai_flags) == f.value) {
-      strncat(buf, f.name, buflen);
-      strncat(buf, ", ", buflen);
+      strlcat(buf, f.name, buflen);
+      strlcat(buf, ", ", buflen);
     }
   }
   size_t len = strlen(buf);
@@ -177,7 +178,7 @@ void fill_flags(int ai_flags, char* buf, size_t buflen)
   {
     buf[strlen(buf)-2] = '\0';
   }
-  strncat(buf, "]", buflen);
+  strlcat(buf, "]", buflen);
 }
 
 void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s);
@@ -206,7 +207,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
     char protocol[NI_MAXHOST];
     fill_protocol(hints.ai_protocol, protocol, sizeof(protocol));
     char flags_r[NI_MAXHOST*MAXFLAGS] = {0};
-    fill_flags(hints.ai_flags, flags_r, sizeof(flags_r));
+    fill_flags(hints.ai_flags, flags_r, sizeof(flags_r)/sizeof(flags_r[0]));
     
 		verbosep(verbose, "query: host %s, service %s, family %s, socktype %s, protocol %s, flags %s\n", 
         host, 
