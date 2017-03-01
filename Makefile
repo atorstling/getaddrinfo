@@ -25,9 +25,10 @@ else
 		LFLAGS=
 endif
 ODIR=target
-ADDRINFO_OUT=$(ODIR)/getaddrinfo
-HOSTBYNAME_OUT=$(ODIR)/gethostbyname
-HOSTBYNAME2_OUT=$(ODIR)/gethostbyname2
+BINDIR=$(ODIR)/bin
+ADDRINFO_OUT=$(BINDIR)/getaddrinfo
+HOSTBYNAME_OUT=$(BINDIR)/gethostbyname
+HOSTBYNAME2_OUT=$(BINDIR)/gethostbyname2
 SDIR=src
 _ADDRINFO_OBJS=common.o getaddrinfo.o 
 _HOSTBYNAME_OBJS=common.o gethostbyname.o
@@ -44,6 +45,9 @@ all: analyze check
 $(ODIR):
 	mkdir $(ODIR)
 
+$(BINDIR):
+	mkdir -p $(BINDIR)
+
 $(ADDRINFO_OUT): $(ADDRINFO_OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
@@ -53,7 +57,7 @@ $(HOSTBYNAME_OUT): $(HOSTBYNAME_OBJS)
 $(HOSTBYNAME2_OUT): $(HOSTBYNAME2_OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
-$(ODIR)/%.o: $(SDIR)/%.c $(ODIR)
+$(ODIR)/%.o: $(SDIR)/%.c $(ODIR) $(BINDIR)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 clean:

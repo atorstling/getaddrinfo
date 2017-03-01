@@ -17,10 +17,10 @@ def check(args, expected_code, expected_texts):
   return (cmd, out, err) 
 
 # no arguments
-print check("target/getaddrinfo -h", 2, ["target/getaddrinfo: network address and service translation"])
+print check("target/bin/getaddrinfo -h", 2, ["target/bin/getaddrinfo: network address and service translation"])
 # non-existent
-print check("target/getaddrinfo localhost", 0, ["AF_INET\tSOCK_STREAM\tIPPROTO_TCP\t127.0.0.1"]);
-print check("target/gethostbyname localhost", 0, ["hostname: localhost", "address: 127.0.0.1"]);
-print check("target/gethostbyname2 localhost", 0, ["hostname: localhost", "address: 127.0.0.1"]);
+print check("target/bin/getaddrinfo localhost", 0, ["AF_INET\tSOCK_STREAM\tIPPROTO_TCP\t127.0.0.1"]);
+print check("target/bin/gethostbyname localhost", 0, ["hostname: localhost", "address: 127.0.0.1"]);
+print check("target/bin/gethostbyname2 localhost", 0, ["hostname: localhost", "address: 127.0.0.1"]);
 # multi-level alias
 print "OK"

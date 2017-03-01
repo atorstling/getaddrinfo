@@ -172,7 +172,8 @@ void fill_flags(int ai_flags, char* buf, size_t buflen)
       strncat(buf, ", ", buflen);
     }
   }
-  if(strcmp(buf+strlen(buf)-2, ", ") == 0)
+  size_t len = strlen(buf);
+  if(len >= 2 && strncmp(buf+len-2, ", ", 2) == 0)
   {
     buf[strlen(buf)-2] = '\0';
   }
@@ -204,7 +205,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
     fill_socktype(hints.ai_socktype, socktype, sizeof(socktype));
     char protocol[NI_MAXHOST];
     fill_protocol(hints.ai_protocol, protocol, sizeof(protocol));
-    char flags_r[NI_MAXHOST*MAXFLAGS];
+    char flags_r[NI_MAXHOST*MAXFLAGS] = {0};
     fill_flags(hints.ai_flags, flags_r, sizeof(flags_r));
     
 		verbosep(verbose, "query: host %s, service %s, family %s, socktype %s, protocol %s, flags %s\n", 

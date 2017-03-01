@@ -18,8 +18,8 @@ def check(args, expected_code, expected_texts):
   return (cmd, out, err) 
 
 # no arguments
-#print check("target/getaddrinfo -h", 2, ["target/getaddrinfo: network address and service translation"])
-print check("target/getaddrinfo bobo", 0, ["AF_INET\tSOCK_STREAM\tIPPROTO_TCP\t172.16.238.10", "AF_INET6\tSOCK_STREAM\tIPPROTO_TCP\t2001:3984:3989::10"]);
-print check("target/getaddrinfo bobob", 0, ["AF_INET\tSOCK_STREAM\tIPPROTO_TCP\t172.16.239.10", "AF_INET6\tSOCK_STREAM\tIPPROTO_TCP\t2001:3984:3990::10"]);
+#print check("target/bin/getaddrinfo -h", 2, ["target/getaddrinfo: network address and service translation"])
+print check("target/bin/getaddrinfo bobo", 0, ["AF_INET\tSOCK_STREAM\tIPPROTO_TCP\t172.16.238.10", "AF_INET6\tSOCK_STREAM\tIPPROTO_TCP\t2001:3984:3989::10"]);
+print check("target/bin/getaddrinfo bobob", 0, ["AF_INET\tSOCK_STREAM\tIPPROTO_TCP\t172.16.239.10", "AF_INET6\tSOCK_STREAM\tIPPROTO_TCP\t2001:3984:3990::10"]);
 # multi-level alias
 print "OK"
