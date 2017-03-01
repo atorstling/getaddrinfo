@@ -207,7 +207,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
     char flags_r[NI_MAXHOST*MAXFLAGS];
     fill_flags(hints.ai_flags, flags_r, sizeof(flags_r));
     
-		printf("query: host %s, service %s, family %s, socktype %s, protocol %s, flags %s\n", 
+		verbosep(verbose, "query: host %s, service %s, family %s, socktype %s, protocol %s, flags %s\n", 
         host, 
         service,
 				family, 
@@ -255,7 +255,7 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 }
 
 static char* DEFAULT_FAMILY=NULL;
-static char* DEFAULT_SOCKTYPE="SOCK_STREAM";
+static char* DEFAULT_SOCKTYPE=NULL;
 static char* DEFAULT_PROTOCOL=NULL;
 
 
@@ -271,15 +271,15 @@ int usage(void) {
   puts("            examples: 80 (port 80) or https (port 443)");
   puts("-f family: lookup a specific address family.");
   puts("           Constant name or int value.");
-  printf("           default: %s", DEFAULT_FAMILY);
+  printf("           default: %s\n", DEFAULT_FAMILY);
   puts("           examples: AF_INET (IPv4) or AF_INET6 (IPv6), 0");
   puts("-s socktype: lookup for specific socket type."); 
   puts("             Constant name or int value.");
-  printf("            default: %s", DEFAULT_SOCKTYPE);
+  printf("             default: %s\n", DEFAULT_SOCKTYPE);
   puts("             examples: SOCK_STREAM, SOCK_DGRAM, 2");
   puts("-p protocol: lookup for specific protocol.");
   puts("             Constant name or int value.");
-  printf("            default: %s", DEFAULT_PROTOCOL);
+  printf("             default: %s\n", DEFAULT_PROTOCOL);
   puts("             examples: IPPROTO_IP, IPPROTO_ICMP, 0");
   puts("-l flag: set flags. See 'man getaddrinfo' for details");
   puts("             Constant name or int value.");
