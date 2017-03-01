@@ -19,6 +19,8 @@
 
 #include "common.h"
 
+#define MAXFLAGS 16
+
 static int verbose;
 
 struct socktype {
@@ -71,6 +73,7 @@ struct protocol {
 };
 
 static struct protocol protocols[] = {
+  // IPPROTO_IP basically means "ANY proto"
   { IPPROTO_IP, "IPPROTO_IP" },
   { IPPROTO_IPV6, "IPPROTO_IPV6" },
   { IPPROTO_ICMP, "IPPROTO_ICMP" },
@@ -157,6 +160,25 @@ int lookup_flags(char** flags_s)
   return result;
 }
 
+void fill_flags(int ai_flags, char* buf, size_t buflen);
+void fill_flags(int ai_flags, char* buf, size_t buflen)
+{
+  strncat(buf, "[", buflen);
+  unsigned int max = (sizeof(flags)/sizeof(flags[0]));
+  for(unsigned int i=0; i<max;++i) {
+    struct flag f=flags[i];
+    if ((f.value & ai_flags) == f.value) {
+      strncat(buf, f.name, buflen);
+      strncat(buf, ", ", buflen);
+    }
+  }
+  if(strcmp(buf+strlen(buf)-2, ", ") == 0)
+  {
+    buf[strlen(buf)-2] = '\0';
+  }
+  strncat(buf, "]", buflen);
+}
+
 void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s);
 void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, char* protocol_s, char** flags_s)
 {
@@ -172,10 +194,28 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
   // AI_CANONNAME etc
 	hints.ai_flags = lookup_flags(flags_s);
 
-  verbosep(verbose, "host: %s\nservice: %s\nai_family: %d\nai_socktype: %d\n"
-         "ai_protocol: %d\nai_flags: %d\n",
-         host, service, hints.ai_family, hints.ai_socktype, 
-         hints.ai_protocol, hints.ai_flags);
+
+  // Print all flags in textual format. Since some inparams might have been numeric, use the
+  // numeric types and reverse them to textual once again.
+  {
+    char family[NI_MAXHOST];
+    fill_family(hints.ai_family, family, sizeof(family));
+    char socktype[NI_MAXHOST];
+    fill_socktype(hints.ai_socktype, socktype, sizeof(socktype));
+    char protocol[NI_MAXHOST];
+    fill_protocol(hints.ai_protocol, protocol, sizeof(protocol));
+    char flags_r[NI_MAXHOST*MAXFLAGS];
+    fill_flags(hints.ai_flags, flags_r, sizeof(flags_r));
+    
+		printf("query: host %s, service %s, family %s, socktype %s, protocol %s, flags %s\n", 
+        host, 
+        service,
+				family, 
+				socktype,
+				protocol,
+				flags_r
+        );
+  }
 
   struct addrinfo *result;
   int s = getaddrinfo(host, service, &hints, &result);
@@ -203,7 +243,6 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
     fill_socktype(rp->ai_socktype, socktype, sizeof(socktype));
     char protocol[NI_MAXHOST];
     fill_protocol(rp->ai_protocol, protocol, sizeof(protocol));
-    //inet_ntop(rp->ai_addr->sa_family, rp->ai_addr, ip, rp->ai_addrlen);
 		printf("%s\t%s\t%s\t%s\t%s\n", 
 				family, 
 				socktype,
@@ -214,6 +253,10 @@ void printaddrinfo(char* host, char* service, char* family_s, char* socktype_s, 
 	}
 	freeaddrinfo(result);
 }
+
+static char* DEFAULT_FAMILY=NULL;
+static char* DEFAULT_SOCKTYPE="SOCK_STREAM";
+static char* DEFAULT_PROTOCOL=NULL;
 
 
 int usage(void);
@@ -228,12 +271,15 @@ int usage(void) {
   puts("            examples: 80 (port 80) or https (port 443)");
   puts("-f family: lookup a specific address family.");
   puts("           Constant name or int value.");
+  printf("           default: %s", DEFAULT_FAMILY);
   puts("           examples: AF_INET (IPv4) or AF_INET6 (IPv6), 0");
   puts("-s socktype: lookup for specific socket type."); 
   puts("             Constant name or int value.");
+  printf("            default: %s", DEFAULT_SOCKTYPE);
   puts("             examples: SOCK_STREAM, SOCK_DGRAM, 2");
   puts("-p protocol: lookup for specific protocol.");
   puts("             Constant name or int value.");
+  printf("            default: %s", DEFAULT_PROTOCOL);
   puts("             examples: IPPROTO_IP, IPPROTO_ICMP, 0");
   puts("-l flag: set flags. See 'man getaddrinfo' for details");
   puts("             Constant name or int value.");
@@ -255,11 +301,6 @@ int usage(void) {
   exit(EXIT_OTHER_ERROR);
 }
 
-#define MAXFLAGS 16
-
-static char* DEFAULT_FAMILY=NULL;
-static char* DEFAULT_SOCKTYPE="SOCK_STREAM";
-static char* DEFAULT_PROTOCOL=NULL;
 
 int main(int argc, char** argv)
 {
@@ -292,6 +333,10 @@ int main(int argc, char** argv)
          protocol_s=strdup2(optarg);
          break;
      case 'l':
+         if (flag_counter > MAXFLAGS)
+         {
+           error(EXIT_OTHER_ERROR, 0, "too many flags, max is %d", MAXFLAGS); 
+         }
          flags_s[flag_counter++]=strdup2(optarg);
          break;
      default: 
