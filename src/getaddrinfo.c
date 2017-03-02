@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 #define MAXFLAGS 16
 
 static int verbose;

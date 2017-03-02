@@ -1,9 +1,9 @@
 #include "common.h"
-#include <sys/socket.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
 
 char *program_name;
 

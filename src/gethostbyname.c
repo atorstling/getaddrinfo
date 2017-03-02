@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 static int verbose;
 
 void printgethostbyname(char *host);
