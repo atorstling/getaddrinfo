@@ -1,24 +1,11 @@
-#include <arpa/inet.h>
+#include "common.h"
 #include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
 
-#include <assert.h>
 #include <bsd/string.h>
-#include <err.h>
-#include <errno.h>
-#include <libgen.h>
-#include <limits.h>
-#include <regex.h>
-#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
 #include <unistd.h>
 
-#include "common.h"
 
 #define MAXFLAGS 16
 
