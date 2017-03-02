@@ -1,55 +1,54 @@
-#include <sys/types.h>
-#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
-#include <sys/stat.h>
-#include <limits.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <assert.h>
 #include <err.h>
 #include <errno.h>
-#include <regex.h>
-#include <assert.h>
-#include <unistd.h>
 #include <libgen.h>
+#include <limits.h>
+#include <regex.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "common.h"
 
 static int verbose;
 
 void printgethostbyname2(char *host, int family);
-void printgethostbyname2(char *host, int family)
-{
-  struct hostent* hosts = gethostbyname2(host, family);
-  if(hosts == NULL) {
-		error(EXIT_FAILURE, 0, "gethostbyname2(\"%s\") - %s\n", host, hstrerror(h_errno));
+void printgethostbyname2(char *host, int family) {
+  struct hostent *hosts = gethostbyname2(host, family);
+  if (hosts == NULL) {
+    error(EXIT_FAILURE, 0, "gethostbyname2(\"%s\") - %s\n", host,
+          hstrerror(h_errno));
   }
   printf("hostname: %s\n", hosts->h_name);
-  for(int i=0;;++i) {
-    char* alias = hosts->h_aliases[i];
-    if (alias==NULL) {
+  for (int i = 0;; ++i) {
+    char *alias = hosts->h_aliases[i];
+    if (alias == NULL) {
       break;
     }
     printf("alias: %s\n", alias);
   }
   char familystr[NI_MAXHOST];
   fill_family(hosts->h_addrtype, familystr, sizeof(familystr));
-  //printf("addrtype: %s\n", familystr);
-  for(int i=0;;++i) {
-    char* addr = hosts->h_addr_list[i];
-    if (addr==NULL) {
+  // printf("addrtype: %s\n", familystr);
+  for (int i = 0;; ++i) {
+    char *addr = hosts->h_addr_list[i];
+    if (addr == NULL) {
       break;
     }
     char straddr[NI_MAXHOST];
-    if (inet_ntop(family, addr, straddr, sizeof(straddr)) == NULL)
-    {
+    if (inet_ntop(family, addr, straddr, sizeof(straddr)) == NULL) {
       error(EXIT_FAILURE, errno, "inet_ntop(%d, \"%s\")", family, addr);
     }
-    //char* straddr2 = inet_ntop( *( struct in_addr*)( addr )); 
+    // char* straddr2 = inet_ntop( *( struct in_addr*)( addr ));
     printf("address: %s\n", straddr);
   }
 }
@@ -71,32 +70,30 @@ int usage(void) {
   exit(EXIT_OTHER_ERROR);
 }
 
-static char* default_family="AF_INET";
+static char *default_family = "AF_INET";
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   program_name = argv[0];
   int opt;
-  char *family_s=default_family;
+  char *family_s = default_family;
   while ((opt = getopt(argc, argv, "vf:")) != -1) {
-     switch (opt) {
-     case 'v':
-         verbose = 1;
-         break;
-     case 'f':
-         family_s=strdup2(optarg);
-         break;
-     default: 
-         usage();
-     }
+    switch (opt) {
+    case 'v':
+      verbose = 1;
+      break;
+    case 'f':
+      family_s = strdup2(optarg);
+      break;
+    default:
+      usage();
+    }
   }
   if (optind >= argc) {
-      usage();
+    usage();
   }
-  char *host = argv[optind]; 
-  printgethostbyname2(host, lookup_family(family_s)); 
-  if(family_s != default_family)
-  {
+  char *host = argv[optind];
+  printgethostbyname2(host, lookup_family(family_s));
+  if (family_s != default_family) {
     free(family_s);
   }
   return 0;

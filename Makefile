@@ -79,3 +79,6 @@ profile: $(PROFOUT)
 
 view-profile: $(PROFOUT)
 	google-pprof $(OUT) $(PROFOUT)
+
+format:
+	clang-format -i src/*
