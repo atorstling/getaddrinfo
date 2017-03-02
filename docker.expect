@@ -1,3 +1,6 @@
-set timeout 30
+set timeout 60
 spawn docker-compose up --build
+expect "OK"
 expect "getaddrinfo_testrunner_1 exited with code 0"
+send \003
+wait
