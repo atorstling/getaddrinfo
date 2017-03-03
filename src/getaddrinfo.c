@@ -1,7 +1,10 @@
 #include "common.h"
 #include <netdb.h>
 
+#ifdef linux
 #include <bsd/string.h>
+#endif
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -21,7 +24,9 @@ static struct socktype socktypes[] = {
     {SOCK_SEQPACKET, "SOCK_SEQPACKET"},
     {SOCK_RAW, "SOCK_RAW"},
     {SOCK_RDM, "SOCK_RDM"},
+#ifdef linux
     {SOCK_PACKET, "SOCK_PACKET"},
+#endif
 };
 
 void fill_socktype(int ai_socktype, char *buf, size_t buflen);
@@ -98,16 +103,23 @@ struct flag {
 };
 
 static struct flag flags[] = {
+#ifdef __DARWIN__
+    {AI_ALL, "AI_ALL"},
+    {AI_V4MAPPED_CFG, "AI_V4MAPPED_CFG"},
+    {AI_DEFAULT, "AI_DEFAULT"},
+#endif
     {AI_CANONNAME, "AI_CANONNAME"},
     {AI_NUMERICSERV, "AI_NUMERICSERV"},
     {AI_NUMERICHOST, "AI_NUMERICHOST"},
     {AI_PASSIVE, "AI_PASSIVE"},
     {AI_ADDRCONFIG, "AI_ADDRCONFIG"},
     {AI_V4MAPPED, "AI_V4MAPPED"},
+#ifdef linux
     {AI_IDN, "AI_IDN"},
     {AI_CANONIDN, "AI_CANONIDN"},
     {AI_IDN_ALLOW_UNASSIGNED, "AI_IDN_ALLOW_UNASSIGNED"},
     {AI_IDN_USE_STD3_ASCII_RULES, "AI_IDN_USE_STD3_ASCII_RULES"},
+#endif
 };
 
 int lookup_flag(char *flag_s);

@@ -12,17 +12,19 @@ UNAME := $(shell uname)
 # https://lwn.net/Articles/590381/
 ifeq ($(UNAME), Linux)
 	CFLAGS+=-std=c11 -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L -D_XOPEN_SOURCE=700 
+	LIBS=-lbsd
 else
 	#Including Darwin
 	CFLAGS+=-std=c11
+	LIBS=
 endif
 # gperftools
 # 'make PROFILE=0' disables profiler mode
 PROFILE ?= 1
 ifeq ($PROFILE), 1)
-		LFLAGS=-lprofiler -lbsd
+		LFLAGS=-lprofiler $(LIBS)
 else
-		LFLAGS=-lbsd
+		LFLAGS=$(LIBS)
 endif
 ODIR=target
 BINDIR=$(ODIR)/bin
