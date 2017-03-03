@@ -1,7 +1,7 @@
 #include "common.h"
 #include <netdb.h>
 
-#ifdef linux
+#ifdef __linux__
 #include <bsd/string.h>
 #endif
 #include <string.h>
