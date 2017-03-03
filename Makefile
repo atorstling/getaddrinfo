@@ -49,16 +49,16 @@ $(BINDIR):
 	mkdir -p $(BINDIR)
 
 $(ADDRINFO_OUT): $(ADDRINFO_OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
+	@$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
 $(HOSTBYNAME_OUT): $(HOSTBYNAME_OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
+	@$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
 $(HOSTBYNAME2_OUT): $(HOSTBYNAME2_OBJS)
-	$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
+	@$(CC) -o $@ $^ $(CFLAGS) $(LFLAGS) 
 
 $(ODIR)/%.o: $(SDIR)/%.c $(ODIR) $(BINDIR)
-	$(CC) -c -o $@ $< $(CFLAGS)
+	@$(CC) -c -o $@ $< $(CFLAGS)
 
 clean:
 	rm -rf $(ODIR)
