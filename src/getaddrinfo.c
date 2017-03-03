@@ -24,7 +24,7 @@ static struct socktype socktypes[] = {
     {SOCK_SEQPACKET, "SOCK_SEQPACKET"},
     {SOCK_RAW, "SOCK_RAW"},
     {SOCK_RDM, "SOCK_RDM"},
-#ifdef linux
+#ifdef __linux__
     {SOCK_PACKET, "SOCK_PACKET"},
 #endif
 };
@@ -114,7 +114,7 @@ static struct flag flags[] = {
     {AI_PASSIVE, "AI_PASSIVE"},
     {AI_ADDRCONFIG, "AI_ADDRCONFIG"},
     {AI_V4MAPPED, "AI_V4MAPPED"},
-#ifdef linux
+#ifdef __linux__
     {AI_IDN, "AI_IDN"},
     {AI_CANONIDN, "AI_CANONIDN"},
     {AI_IDN_ALLOW_UNASSIGNED, "AI_IDN_ALLOW_UNASSIGNED"},
