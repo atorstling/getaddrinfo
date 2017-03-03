@@ -1,2 +1,2 @@
 #!/bin/bash
-valgrind -q --error-exitcode=123 --leak-check=yes --suppressions=supp --gen-suppressions=all $*
+valgrind -q --error-exitcode=123 --leak-check=full --suppressions=supp --gen-suppressions=all $*

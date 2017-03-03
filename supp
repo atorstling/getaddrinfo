@@ -75,5 +75,103 @@
    fun:printaddrinfo
    fun:main
 }
-
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ConnectToServer
+   fun:DNSServiceCreateConnection
+   fun:_mdns_search
+   fun:mdns_addrinfo
+   fun:search_addrinfo
+   fun:si_addrinfo
+   fun:getaddrinfo
+   fun:printaddrinfo
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:_objc_fetch_pthread_data
+   fun:_ZL27_fetchInitializingClassLista
+   fun:_class_initialize
+   fun:_class_initialize
+   fun:_class_initialize
+   fun:_class_initialize
+   fun:lookUpImpOrForward
+   fun:objc_msgSend
+   fun:xpc_pipe_routine
+   fun:_xpc_interface_routine
+   fun:bootstrap_look_up3
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_object_remove_assocations
+   fun:objc_destructInstance
+   fun:object_dispose
+   fun:-[OS_xpc_object _xref_dispose]
+   fun:xpc_pipe_routine
+   fun:_xpc_interface_routine
+   fun:bootstrap_look_up3
+   fun:bootstrap_look_up2
+   fun:___notify_lib_init_block_invoke
+   fun:_dispatch_client_callout
+   fun:dispatch_once_f
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ConnectToServer
+   fun:DNSServiceCreateConnection
+   fun:_mdns_search
+   fun:mdns_hostbyname
+   fun:search_host_byname
+   fun:gethostbyname
+   fun:printgethostbyname
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:LI_get_thread_info
+   fun:LI_set_thread_item
+   fun:gethostbyname
+   fun:printgethostbyname
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:ConnectToServer
+   fun:DNSServiceCreateConnection
+   fun:_mdns_search
+   fun:mdns_hostbyname
+   fun:search_host_byname
+   fun:gethostbyname2
+   fun:printgethostbyname2
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   fun:LI_get_thread_info
+   fun:LI_set_thread_item
+   fun:gethostbyname2
+   fun:printgethostbyname2
+   fun:main
+}
 
